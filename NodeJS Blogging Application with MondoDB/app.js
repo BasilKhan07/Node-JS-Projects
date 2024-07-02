@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const path = require("path");
 const express = require("express");
 const mongoose = require("mongoose");
@@ -13,11 +15,11 @@ const {
 } = require("./middlewares/authentication");
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/blogify")
+  .connect(process.env.MONGO_URL)
   .then(() => console.log("MongoDB Connected."));
 
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
@@ -25,7 +27,7 @@ app.set("views", path.resolve("./views"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(checkForAuthenticationCookie("token"));
-app.use(express.static(path.resolve("./public")))
+app.use(express.static(path.resolve("./public")));
 
 app.get("/", async (req, res) => {
   const allBlogs = await Blog.find({});
